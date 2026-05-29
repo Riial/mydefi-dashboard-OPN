@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MyDeFi Dashboard</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0f1020;
+      color: white;
+    }
+
+    header {
+      padding: 32px 20px;
+      text-align: center;
+      background: linear-gradient(135deg, #6d28d9, #2563eb);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 34px;
+    }
+
+    header p {
+      margin-top: 12px;
+      color: #e5e7eb;
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+
+    .card {
+      background: #181a2e;
+      border: 1px solid #2d3050;
+      border-radius: 16px;
+      padding: 22px;
+      margin-bottom: 20px;
+    }
+
+    .wallet {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      background: #7c3aed;
+      color: white;
+      border: none;
+      padding: 12px 18px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background: #6d28d9;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+    }
+
+    .box {
+      background: #111327;
+      border-radius: 12px;
+      padding: 16px;
+      border: 1px solid #2d3050;
+    }
+
+    .box h3 {
+      margin: 0 0 8px;
+    }
+
+    .box p {
+      margin: 0;
+      color: #a1a1aa;
+    }
+
+    .activity p {
+      background: #111327;
+      padding: 12px;
+      border-radius: 10px;
+      color: #d4d4d8;
+    }
+
+    footer {
+      text-align: center;
+      color: #71717a;
+      padding: 30px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>MyDeFi Dashboard</h1>
+    <p>A clean DeFi dashboard for tracking wallet assets, activity, and positions in one simple view.</p>
+  </header>
+
+  <main class="container">
+    <section class="card wallet">
+      <div>
+        <h2>Wallet Overview</h2>
+        <p id="walletStatus">No wallet connected</p>
+      </div>
+      <button onclick="connectWallet()">Connect Wallet</button>
+    </section>
+
+    <section class="card">
+      <h2>Portfolio Summary</h2>
+      <div class="grid">
+        <div class="box">
+          <h3>Total Balance</h3>
+          <p>$2,450.75</p>
+        </div>
+        <div class="box">
+          <h3>Supported Chains</h3>
+          <p>Ethereum, Base, Arbitrum</p>
+        </div>
+        <div class="box">
+          <h3>Active Positions</h3>
+          <p>3 DeFi positions</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Token List</h2>
+      <div class="grid">
+        <div class="box">
+          <h3>ETH</h3>
+          <p>0.42 ETH</p>
+        </div>
+        <div class="box">
+          <h3>USDC</h3>
+          <p>850.00 USDC</p>
+        </div>
+        <div class="box">
+          <h3>ARB</h3>
+          <p>1,200 ARB</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="card activity">
+      <h2>Recent Activity</h2>
+      <p>Swap USDC to ETH on Base</p>
+      <p>Provided liquidity on Arbitrum</p>
+      <p>Claimed staking rewards</p>
+    </section>
+  </main>
+
+  <footer>
+    Early DeFi dashboard prototype built for IOPn Season 1.
+  </footer>
+
+  <script>
+    function connectWallet() {
+      document.getElementById("walletStatus").innerText =
+        "Wallet connected: 0x3601...48B7";
+    }
+  </script>
+</body>
+  </html>
