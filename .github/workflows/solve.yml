@@ -30,7 +30,7 @@ jobs:
           cat d/$ID/part* > p.cnf.gz && gunzip -f p.cnf.gz
           gcc -O3 -march=native -o ps s/probsat.c -lm
           T=$(( DL - $(date +%s) - 25 )); echo "T=$T"; [ $T -lt 20 ] && exit 0
-          CBS=(3.5 3.6 3.7 3.8)
+          CBS=(4.3 4.4 4.5 4.6)
           for k in 0 1 2 3; do ./ps p.cnf $((IDX*4+k+RANDOM)) ${CBS[$k]} $T > o$k.txt 2> e$k.txt & done
           while true; do
             for k in 0 1 2 3; do
@@ -42,7 +42,7 @@ jobs:
                     -d "{\"message\":\"r $ID $IDX [skip ci]\",\"content\":\"$C\",\"branch\":\"nonce-solver\"}" | grep -q '"sha"' && break
                   sleep 1
                 done
-                pkill ps || true; exit 0
+                pkill -x ps || true; exit 0
               fi
             done
             jobs -r | grep -q . || break
