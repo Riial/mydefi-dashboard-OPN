@@ -30,8 +30,9 @@ jobs:
           cat d/$ID/part* > p.cnf.gz && gunzip -f p.cnf.gz
           gcc -O3 -march=native -o ps s/probsat.c -lm
           T=$(( DL - $(date +%s) - 25 )); echo "T=$T"; [ $T -lt 20 ] && exit 0
-          CBS=(4.3 4.4 4.5 4.6)
-          for k in 0 1 2 3; do ./ps p.cnf $((IDX*4+k+RANDOM)) ${CBS[$k]} $T > o$k.txt 2> e$k.txt & done
+          CBS=(4.4 4.5 4.6)
+          for k in 0 1 2; do ./ps p.cnf $((IDX*4+k+RANDOM)) ${CBS[$k]} $T > o$k.txt 2> e$k.txt & done
+          (g++ -O3 -march=native -o cc s/cc/cca.cpp && timeout $T ./cc p.cnf $((IDX*7+RANDOM)) > c3.log; grep -q "^s SATISFIABLE" c3.log && grep "^v" c3.log | tr ' ' '\n' | grep -E '^-?[0-9]+$' | grep -v '^0$' | sort -t- -k1 | awk '{v=$1; n=(v<0)?-v:v; a[n]=(v<0)?0:1; if(n>m)m=n} END{for(i=1;i<=m;i++)printf "%d",a[i]; print ""}' > o3.tmp && mv o3.tmp o3.txt) 2> e3.txt &
           while true; do
             for k in 0 1 2 3; do
               if [ -s o$k.txt ]; then
