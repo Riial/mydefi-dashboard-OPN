@@ -1,0 +1,51 @@
+name: nonce-solve
+on:
+  push:
+    branches: [nonce-solver]
+    paths: ['p/**']
+permissions:
+  contents: write
+jobs:
+  solve:
+    runs-on: ubuntu-latest
+    timeout-minutes: 17
+    strategy:
+      fail-fast: false
+      matrix:
+        idx: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: nonce-solver
+          sparse-checkout: |
+            p
+            d
+            s
+      - name: solve
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          IDX: ${{ matrix.idx }}
+        run: |
+          ID=$(jq -r .id p/latest.json); DL=$(jq -r .deadline p/latest.json)
+          cat d/$ID/part* > p.cnf.gz && gunzip -f p.cnf.gz
+          gcc -O3 -march=native -o ps s/probsat.c -lm
+          T=$(( DL - $(date +%s) - 25 )); echo "T=$T"; [ $T -lt 20 ] && exit 0
+          CBS=(3.5 3.6 3.7 3.8)
+          for k in 0 1 2 3; do ./ps p.cnf $((IDX*4+k+RANDOM)) ${CBS[$k]} $T > o$k.txt 2> e$k.txt & done
+          while true; do
+            for k in 0 1 2 3; do
+              if [ -s o$k.txt ]; then
+                C=$(base64 -w0 o$k.txt)
+                for i in 1 2 3 4 5; do
+                  curl -s -X PUT -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+                    https://api.github.com/repos/${{ github.repository }}/contents/r/$ID/$IDX.txt \
+                    -d "{\"message\":\"r $ID $IDX [skip ci]\",\"content\":\"$C\",\"branch\":\"nonce-solver\"}" | grep -q '"sha"' && break
+                  sleep 1
+                done
+                pkill ps || true; exit 0
+              fi
+            done
+            jobs -r | grep -q . || break
+            sleep 1
+          done
+          tail -n1 e*.txt
