@@ -32,7 +32,10 @@ jobs:
           T=$(( DL - $(date +%s) - 25 )); echo "T=$T"; [ $T -lt 20 ] && exit 0
           CBS=(4.4 4.5 4.6)
           for k in 0 1 2; do ./ps p.cnf $((IDX*4+k+RANDOM)) ${CBS[$k]} $T > o$k.txt 2> e$k.txt & done
+          if [ $((IDX%2)) -eq 1 ]; then (git clone -q --depth 1 https://github.com/dtompkins/ubcsat.git ub && make -C ub -s >/dev/null 2>&1; timeout $T ub/ubcsat -alg paws -i p.cnf -cutoff max -timeout $((T-5)) -seed $((IDX*11+RANDOM)) -solve -r out null -r stats null -r solution sol.txt -q; grep -oE -- '-?[0-9]+' sol.txt | awk '{v=$1; n=(v<0)?-v:v; if(n>0){a[n]=(v<0)?0:1; if(n>m)m=n}} END{if(m==1536){for(i=1;i<=m;i++)printf "%d",a[i]; print ""}}' > o3.tmp && [ -s o3.tmp ] && mv o3.tmp o3.txt) 2> e3.txt &
+          else
           (g++ -O3 -march=native -o cc s/cc/cca.cpp && timeout $T ./cc p.cnf $((IDX*7+RANDOM)) > c3.log; grep -q "^s SATISFIABLE" c3.log && grep "^v" c3.log | tr ' ' '\n' | grep -E '^-?[0-9]+$' | grep -v '^0$' | sort -t- -k1 | awk '{v=$1; n=(v<0)?-v:v; a[n]=(v<0)?0:1; if(n>m)m=n} END{for(i=1;i<=m;i++)printf "%d",a[i]; print ""}' > o3.tmp && mv o3.tmp o3.txt) 2> e3.txt &
+          fi
           while true; do
             for k in 0 1 2 3; do
               if [ -s o$k.txt ]; then
